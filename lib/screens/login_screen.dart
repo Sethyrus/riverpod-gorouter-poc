@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod101/screens/home_screen.dart';
 import 'package:riverpod101/screens/register_screen.dart';
-import 'package:riverpod101/services/auth_service.dart';
+import 'package:riverpod101/providers/auth_provider.dart';
 
 class LoginScreen extends ConsumerWidget {
   static const routeName = '/login';
@@ -30,7 +30,7 @@ class LoginScreen extends ConsumerWidget {
             ),
             ElevatedButton(
               onPressed: () {
-                context.go(RegisterScreen.routeName);
+                context.push(RegisterScreen.routeName);
               },
               child: const Tx('Ir al registro'),
             ),

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_kit/widgets/layout.dart';
 import 'package:flutter_kit/widgets/tx.dart';
 import 'package:go_router/go_router.dart';
-import 'package:riverpod101/screens/login_screen.dart';
 
 class RegisterScreen extends StatelessWidget {
   static const routeName = '/register';
@@ -21,10 +20,10 @@ class RegisterScreen extends StatelessWidget {
             const Text('Register'),
             ElevatedButton(
               onPressed: () {
-                context.go(LoginScreen.routeName);
+                context.pop();
                 // context.go(LoginScreen.routeName);
               },
-              child: const Tx('Ir al login'),
+              child: const Tx('Volver al login'),
             )
           ],
         ),
