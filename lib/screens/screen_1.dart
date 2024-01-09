@@ -1,4 +1,4 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 
 class Screen1 extends StatelessWidget {
   static const String routeName = '/screen1';
@@ -7,8 +7,10 @@ class Screen1 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text('Screen 1'),
+    return const Scaffold(
+      body: Center(
+        child: Text('Screen 1'),
+      ),
     );
   }
 }

@@ -11,24 +11,26 @@ class Screen2a extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const Center(
-          child: Text('Screen 2a'),
-        ),
-        ElevatedButton(
-          onPressed: () {
-            context.go('$routeName/${Screen2a1.routeName}');
-          },
-          child: const Tx('Screen 2a1'),
-        ),
-        ElevatedButton(
-          onPressed: () {
-            context.go('$routeName/${Screen2a2.routeName}');
-          },
-          child: const Tx('Screen 2a2'),
-        ),
-      ],
+    return Scaffold(
+      body: Column(
+        children: [
+          const Center(
+            child: Text('Screen 2a'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              context.go('$routeName/${Screen2a1.routeName}');
+            },
+            child: const Tx('Screen 2a1'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              context.go('$routeName/${Screen2a2.routeName}');
+            },
+            child: const Tx('Screen 2a2'),
+          ),
+        ],
+      ),
     );
   }
 }

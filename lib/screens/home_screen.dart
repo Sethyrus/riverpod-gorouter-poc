@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_kit/widgets/layout.dart';
 import 'package:flutter_kit/widgets/tx.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod101/providers/auth_provider.dart';
@@ -11,8 +10,8 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Layout(
-      child: SizedBox(
+    return Scaffold(
+      body: SizedBox(
         width: double.infinity,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

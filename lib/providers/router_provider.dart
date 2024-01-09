@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:riverpod101/utils/toast.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:riverpod101/models/user_profile.dart';
 import 'package:riverpod101/providers/auth_provider.dart';
@@ -22,11 +23,29 @@ import 'package:riverpod101/widgets/tabs_layout.dart';
 
 part 'router_provider.g.dart';
 
+// Global keys for each navigator
+// Supposedly can cause unexpected behavior if not used
+// Also can be used to access the navigator state from anywhere in the app
+final _rootNavKey = GlobalKey<NavigatorState>();
+final _homeNavKey = GlobalKey<NavigatorState>();
+final _screen1NavKey = GlobalKey<NavigatorState>();
+final _screen2NavKey = GlobalKey<NavigatorState>();
+final _screen2aNavKey = GlobalKey<NavigatorState>();
+final _screen2bNavKey = GlobalKey<NavigatorState>();
+final _screen2cNavKey = GlobalKey<NavigatorState>();
+final _screen3NavKey = GlobalKey<NavigatorState>();
+final _screen3aNavKey = GlobalKey<NavigatorState>();
+final _screen3bNavKey = GlobalKey<NavigatorState>();
+
+/// Router Provider
+/// Manages routing logic, including authentication flow by listening to
+/// the authProvider
 @riverpod
 GoRouter router(RouterRef ref) {
   final AsyncValue<UserProfile?> userProfile = ref.watch(authProvider);
 
   return GoRouter(
+    navigatorKey: _rootNavKey,
     initialLocation: HomeScreen.routeName,
     routes: [
       // Login page
@@ -47,6 +66,7 @@ GoRouter router(RouterRef ref) {
         branches: [
           // Home branch
           StatefulShellBranch(
+            navigatorKey: _homeNavKey,
             initialLocation: HomeScreen.routeName,
             routes: [
               GoRoute(
@@ -59,6 +79,7 @@ GoRouter router(RouterRef ref) {
           ),
           // Screen 1 branch
           StatefulShellBranch(
+            navigatorKey: _screen1NavKey,
             initialLocation: Screen1.routeName,
             routes: [
               GoRoute(
@@ -71,6 +92,7 @@ GoRouter router(RouterRef ref) {
           ),
           // Screen 2 branch (Tabs)
           StatefulShellBranch(
+            navigatorKey: _screen2NavKey,
             initialLocation: Screen2a.routeName,
             routes: [
               StatefulShellRoute.indexedStack(
@@ -95,6 +117,7 @@ GoRouter router(RouterRef ref) {
                 },
                 branches: [
                   StatefulShellBranch(
+                    navigatorKey: _screen2aNavKey,
                     initialLocation: Screen2a.routeName,
                     routes: [
                       GoRoute(
@@ -105,23 +128,18 @@ GoRouter router(RouterRef ref) {
                         routes: [
                           GoRoute(
                             path: Screen2a1.routeName,
-                            pageBuilder: (context, state) =>
-                                const NoTransitionPage(
-                              child: Screen2a1(),
-                            ),
+                            builder: (context, state) => const Screen2a1(),
                           ),
                           GoRoute(
                             path: Screen2a2.routeName,
-                            pageBuilder: (context, state) =>
-                                const NoTransitionPage(
-                              child: Screen2a2(),
-                            ),
+                            builder: (context, state) => const Screen2a2(),
                           ),
                         ],
                       ),
                     ],
                   ),
                   StatefulShellBranch(
+                    navigatorKey: _screen2bNavKey,
                     initialLocation: Screen2b.routeName,
                     routes: [
                       GoRoute(
@@ -133,6 +151,7 @@ GoRouter router(RouterRef ref) {
                     ],
                   ),
                   StatefulShellBranch(
+                    navigatorKey: _screen2cNavKey,
                     initialLocation: Screen2c.routeName,
                     routes: [
                       GoRoute(
@@ -143,24 +162,15 @@ GoRouter router(RouterRef ref) {
                         routes: [
                           GoRoute(
                             path: Screen2c1.routeName,
-                            pageBuilder: (context, state) =>
-                                const NoTransitionPage(
-                              child: Screen2c1(),
-                            ),
+                            builder: (context, state) => const Screen2c1(),
                           ),
                           GoRoute(
                             path: Screen2c2.routeName,
-                            pageBuilder: (context, state) =>
-                                const NoTransitionPage(
-                              child: Screen2c2(),
-                            ),
+                            builder: (context, state) => const Screen2c2(),
                           ),
                           GoRoute(
                             path: Screen2c3.routeName,
-                            pageBuilder: (context, state) =>
-                                const NoTransitionPage(
-                              child: Screen2c3(),
-                            ),
+                            builder: (context, state) => const Screen2c3(),
                           ),
                         ],
                       ),
@@ -172,6 +182,7 @@ GoRouter router(RouterRef ref) {
           ),
           // Screen 3 branch (Tabs)
           StatefulShellBranch(
+            navigatorKey: _screen3NavKey,
             initialLocation: Screen3a.routeName,
             routes: [
               StatefulShellRoute.indexedStack(
@@ -192,6 +203,7 @@ GoRouter router(RouterRef ref) {
                 },
                 branches: [
                   StatefulShellBranch(
+                    navigatorKey: _screen3aNavKey,
                     initialLocation: Screen3a.routeName,
                     routes: [
                       GoRoute(
@@ -203,6 +215,7 @@ GoRouter router(RouterRef ref) {
                     ],
                   ),
                   StatefulShellBranch(
+                    navigatorKey: _screen3bNavKey,
                     initialLocation: Screen3b.routeName,
                     routes: [
                       GoRoute(
@@ -220,14 +233,44 @@ GoRouter router(RouterRef ref) {
         ],
       ),
     ],
+    // Authentication flow
+    // Redirects to login if not logged in, else stays in the page unless
+    // the user is in the login or register page, in which case it redirects
+    // to the home page
     redirect: (BuildContext context, GoRouterState state) {
       final loggedIn = userProfile.value != null;
       final loggingIn = state.matchedLocation == LoginScreen.routeName ||
           state.matchedLocation == RegisterScreen.routeName;
 
-      if (!loggedIn) return loggingIn ? null : '/login';
+      if (!loggedIn) {
+        if (loggingIn) {
+          return null;
+        } else {
+          /// TODO Mostrar toast/snackbar/aviso - Hay error al no
+          /// encontrar un Scaffold en los ancestros
+          // Toast.show('Debes iniciar sesión para acceder a esta página');
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   const SnackBar(
+          //     content: Text('Debes iniciar sesión para acceder a esta página'),
+          //   ),
+          // );
 
-      if (loggingIn) return '/';
+          return '/login';
+        }
+      }
+
+      if (loggingIn) {
+        /// TODO Mostrar toast/snackbar/aviso - Hay error al no
+        /// encontrar un Scaffold en los ancestros
+        // Toast.show('Ya has iniciado sesión');
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   const SnackBar(
+        //     content: Text('Ya has iniciado sesión'),
+        //   ),
+        // );
+
+        return '/';
+      }
 
       return null;
     },

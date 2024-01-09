@@ -7,18 +7,20 @@ class Screen2c2 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const Center(
-          child: Text('Screen 2c2'),
-        ),
-        ElevatedButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          child: const Text('Volver'),
-        ),
-      ],
+    return Scaffold(
+      body: Column(
+        children: [
+          const Center(
+            child: Text('Screen 2c2'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('Volver'),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_kit/widgets/layout.dart';
 import 'package:flutter_kit/widgets/tx.dart';
 import 'package:go_router/go_router.dart';
 
@@ -10,8 +9,8 @@ class RegisterScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Layout(
-      child: SizedBox(
+    return Scaffold(
+      body: SizedBox(
         width: double.infinity,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

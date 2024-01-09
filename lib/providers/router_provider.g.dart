@@ -6,9 +6,13 @@ part of 'router_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$routerHash() => r'378ff848193eb45d6669ca95cb80e88aff12f9c3';
+String _$routerHash() => r'3f2b14321b6746b4bdf81632d86825d65f7a1c9e';
 
-/// See also [router].
+/// Router Provider
+/// Manages routing logic, including authentication flow by listening to
+/// the authProvider
+///
+/// Copied from [router].
 @ProviderFor(router)
 final routerProvider = AutoDisposeProvider<GoRouter>.internal(
   router,

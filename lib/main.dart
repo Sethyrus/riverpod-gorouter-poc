@@ -3,6 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod101/providers/router_provider.dart';
 import 'package:riverpod101/utils/consts.dart';
 
+final GlobalKey<ScaffoldMessengerState> rootScaffoldMessengerKey =
+    GlobalKey<ScaffoldMessengerState>();
+
+// Desacoplamos _App como ConsumerWidget para acceder al routerProvider
 class _App extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -17,6 +21,8 @@ class _App extends ConsumerWidget {
         ),
         canvasColor: Colors.white,
       ),
+      scaffoldMessengerKey: rootScaffoldMessengerKey,
+      // [GoRouter] provided routing information
       routeInformationParser: router.routeInformationParser,
       routerDelegate: router.routerDelegate,
       routeInformationProvider: router.routeInformationProvider,
@@ -25,5 +31,6 @@ class _App extends ConsumerWidget {
 }
 
 void main() {
+  // [ProviderScope] Top level provider required by Riverpod
   runApp(ProviderScope(child: _App()));
 }
