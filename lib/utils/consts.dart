@@ -13,3 +13,5 @@ const List<UserProfile> users = [
   UserProfile(uid: '2', name: 'Alex', email: 'alex@mail.com'),
   UserProfile(uid: '3', name: 'Raúl', email: 'raul@mail.com'),
 ];
+
+const defaultDuration = Duration(seconds: 1);

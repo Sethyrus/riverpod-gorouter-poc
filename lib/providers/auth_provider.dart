@@ -1,3 +1,4 @@
+import 'package:flutter_kit/utils/debugger.dart';
 import 'package:riverpod101/models/user_profile.dart';
 import 'package:riverpod101/utils/consts.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -13,18 +14,25 @@ class Auth extends _$Auth {
   /// y cachea el resultado para futuras consultas. Si se invalida el provider
   /// se vuelve a ejecutar este método.
   @override
-  Future<UserProfile?> build() async {
+  Future<UserProfile> build() async {
+    Debugger.log('Auth.build()');
+
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    final String? email = prefs.getString('email');
+    final String? email = await Future.delayed(
+      defaultDuration,
+      () => prefs.getString('email'),
+    );
 
     if (email != null) {
-      return users.firstWhereOrNull(
+      final user = users.firstWhereOrNull(
         (UserProfile u) => u.email == email,
       );
+
+      if (user != null) return user;
     }
 
-    return null;
+    return UserProfile.empty;
   }
 
   /// Simula un inicio de sesión. Busca el usuario por email en la lista de
@@ -32,11 +40,16 @@ class Auth extends _$Auth {
   /// Al finalizar la operación, invalida el provider para que se vuelva a
   /// ejecutar el build.
   Future<void> login(String user, String pass) async {
-    final UserProfile? userProfile = users.firstWhereOrNull(
-      (UserProfile u) => u.name == user,
+    final UserProfile userProfile = await Future.delayed(
+      defaultDuration,
+      () =>
+          users.firstWhereOrNull(
+            (UserProfile u) => u.name == user,
+          ) ??
+          UserProfile.empty,
     );
 
-    if (userProfile != null) {
+    if (userProfile.email.isNotEmpty) {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
 
       await prefs.setString('email', userProfile.email);

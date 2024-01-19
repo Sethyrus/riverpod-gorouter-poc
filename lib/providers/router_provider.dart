@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_kit/utils/debugger.dart';
 import 'package:go_router/go_router.dart';
-import 'package:riverpod101/utils/toast.dart';
+import 'package:riverpod101/screens/loading_screen.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:riverpod101/models/user_profile.dart';
 import 'package:riverpod101/providers/auth_provider.dart';
@@ -42,12 +43,29 @@ final _screen3bNavKey = GlobalKey<NavigatorState>();
 /// the authProvider
 @riverpod
 GoRouter router(RouterRef ref) {
-  final AsyncValue<UserProfile?> userProfile = ref.watch(authProvider);
+  final isAuth = ValueNotifier<AsyncValue<UserProfile>>(const AsyncLoading());
+
+  ref
+    ..onDispose(isAuth.dispose)
+    ..listen(
+      authProvider.select((value) => value.whenData((value) => value)),
+      (_, next) {
+        Debugger.log('Auth: $next');
+
+        isAuth.value = next;
+      },
+    );
 
   return GoRouter(
     navigatorKey: _rootNavKey,
     initialLocation: HomeScreen.routeName,
+    refreshListenable: isAuth,
     routes: [
+      // Loading page
+      GoRoute(
+        path: LoadingScreen.routeName,
+        builder: (context, state) => const LoadingScreen(),
+      ),
       // Login page
       GoRoute(
         path: LoginScreen.routeName,
@@ -238,9 +256,20 @@ GoRouter router(RouterRef ref) {
     // the user is in the login or register page, in which case it redirects
     // to the home page
     redirect: (BuildContext context, GoRouterState state) {
-      final loggedIn = userProfile.value != null;
+      if (isAuth.value.unwrapPrevious().hasError) {
+        Debugger.log('Error: ${isAuth.value.unwrapPrevious().error}');
+        return LoginScreen.routeName;
+      }
+
+      if (isAuth.value.isLoading || !isAuth.value.hasValue) {
+        Debugger.log('Loading');
+        return LoadingScreen.routeName;
+      }
+
+      final loggedIn = isAuth.value.requireValue.email.isNotEmpty;
       final loggingIn = state.matchedLocation == LoginScreen.routeName ||
           state.matchedLocation == RegisterScreen.routeName;
+      final loading = state.matchedLocation == LoadingScreen.routeName;
 
       if (!loggedIn) {
         if (loggingIn) {
@@ -255,7 +284,7 @@ GoRouter router(RouterRef ref) {
           //   ),
           // );
 
-          return '/login';
+          return LoginScreen.routeName;
         }
       }
 
@@ -269,8 +298,10 @@ GoRouter router(RouterRef ref) {
         //   ),
         // );
 
-        return '/';
+        return HomeScreen.routeName;
       }
+
+      if (loading) return HomeScreen.routeName;
 
       return null;
     },
